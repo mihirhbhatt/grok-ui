@@ -1,0 +1,4 @@
+- open index.html in browser
+- add api key
+- add system prompt
+- use chat
