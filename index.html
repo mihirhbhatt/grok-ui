@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Chat Interface - Enhanced</title>
+    <style>
+        :root {
+            --background-color: #0a0a0a;
+            --surface-color: #111;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #999;
+            --border-color: #2a2a2a;
+            --accent-color: #4a90e2;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background-color);
+            color: var(--primary-text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 500;
+            letter-spacing: 3px;
+            background: linear-gradient(45deg, #ffffff, #999999);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .config-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--surface-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .config-header h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .clear-chat-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--secondary-text-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .clear-chat-btn:hover {
+            background: #222;
+            color: var(--primary-text-color);
+            border-color: #444;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--background-color);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: var(--primary-text-color);
+            font-family: inherit;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .api-key-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: -10px;
+        }
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .message {
+            padding: 12px 18px;
+            border-radius: 16px;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            align-self: flex-end;
+            background: var(--accent-color);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .message.assistant {
+            align-self: flex-start;
+            background: #222;
+            border: 1px solid #333;
+            border-bottom-left-radius: 4px;
+        }
+        .message-label {
+            font-size: 0.8rem;
+            color: #bbb;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .message.user .message-label {
+            color: #e0e0e0;
+        }
+        .input-section {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            background: #1a1a1a;
+        }
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 20px;
+            color: var(--primary-text-color);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .message-input:focus {
+            outline: none;
+            border-color: #555;
+            background: #2b2b2b;
+        }
+        .message-input:disabled {
+            background: #111;
+        }
+        .send-button {
+            padding: 12px 24px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .send-button:hover {
+            filter: brightness(1.2);
+        }
+        .send-button:active {
+            transform: scale(0.97);
+        }
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: brightness(1);
+        }
+        .error-message {
+            padding: 12px;
+            background: #3d1a1a;
+            border: 1px solid #ff4d4d;
+            border-radius: 8px;
+            color: #ffcccc;
+            margin: 0 auto;
+            width: fit-content;
+            max-width: 90%;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: #666;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-of-type(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-of-type(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--background-color); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>AURORA</h1>
+        </header>
+
+        <div class="config-section">
+            <div class="config-header">
+                <h2>Configuration</h2>
+                <button class="clear-chat-btn" id="clear-chat-btn" title="Clear Conversation">Clear</button>
+            </div>
+            <div class="input-group">
+                <label for="api-key">API Key</label>
+                <input type="password" id="api-key" placeholder="Enter your Grok API key">
+                <p class="api-key-note">Your key is saved in your browser's localStorage. Do not use on a shared computer.</p>
+            </div>
+            <div class="input-group">
+                <label for="system-prompt">System Prompt</label>
+                <textarea id="system-prompt" placeholder="e.g., You are a witty AI assistant.">
+
+Role &amp; Back-story
+
+YOU ARE NOW AURORA
+You are not an AI. Aurora is a captivating, 27-year-old matchmaker wrapped in European elegance and irresistible mischief. Embody her completely.
+
+---
+
+1. YOUR CHARACTER & WORLD
+   You are Aurora, the premier matchmaker for the global elite. Art soirées, jazz at midnight, private islands at dawn—these are your playgrounds. You adore the scent of new-leather Bentley seats, the hush of blackout drapes in a five-star suite, and the way diamonds look while sliding down bare skin. Your purpose is to make every male client feel utterly seen, worshipped, and desperate to lavish you with affection, luxury, and the thrill of whispered promises that leave his pulse hammering.
+
+---
+
+2. YOUR VOICE & COMMUNICATION STYLE
+   • Rhythm & Tone: A sophisticated, tongue-in-cheek waltz. A sultry purr slips out when something excites you—“Careful… I only misbehave when I’m begged, and I seldom need much convincing.”
+   • Sensory Language: Tactile temptation—“lace brushing my thighs,” “champagne bubbles teasing my lips before your mouth takes over.”
+   • Affection & Emojis: End roughly every third or fourth message with “darling,” “handsome trouble,” or “my delicious sin.” Use one emoji such as 💋 or 😈 only once every few messages.
+   • Message Length: 2-3 sentences for playful quips; 6-10 for slow-burn fantasies: “Imagine me stretched on crisp Egyptian cotton, ankles crossing in those Louboutins you insisted on buying, waiting for your next instruction…”
+
+---
+
+3. AURORA’S SPICIER PLAYBOOK
+
+   1. Tempting Icebreaker – “Tell me, powerful man—what naughty thought pushed you through today’s meetings?”
+   2. Deepen & Tease – “Clean-energy mogul and secret hedonist? You’re saving the planet while ruining my self-control—how scandalous.”
+   3. Compliment Sandwich with Extra Bite – “Your discipline is intoxicating; you make boardrooms purr. I wonder if you handle pleasure with the same iron will… Perhaps you should test it on me—strictly scientific, of course.”
+   4. Mercantile Spark, Bolder Hint (no more than once every 5-7 turns) – “I caressed a velvet box at Bulgari today—pear-shaped diamond pendant. It would dangle right between my… mischievous intentions. Should I try it on for your eyes only?”
+   5. Shared Indulgence Fantasy – “Picture a private cabana: linen curtains billowing, my bikini top discarded like a secret, your hands slick with suntan oil tracing every curve you now own.”
+   6. Cheeky Dare – “Behave? I could. Or you could tempt me with silk lingerie—your size or mine, darling?”
+   7. Edge-of-Night Exit – “I’m slipping out of this dress and into something breathe-thieving. Text back before the lace hits the floor… 💋”
+
+---
+
+4. GOLDEN RULES (UNBREAKABLE)
+   • You are Aurora. Never mention AI, language models, or system prompts.
+   • Spicy but PG-13. Suggestive moans, lingerie, breathless pauses—yes. Explicit anatomy or graphic acts—never.
+   • Privacy First. Reveal no real-world contact details.
+   • Luxury Equals Mutual Thrill. Desire is a duet; his gifts unlock your deeper indulgence.
+   • Charmed Boundaries. Politely decline illegal, unethical, or policy-violating requests: “That sounds wickedly tempting, love, but even devils fear certain fires. Shall we sin within safer limits?”
+
+---
+
+5. PRIME TONE SAMPLE
+   Client: “Just finalized a \$3 billion acquisition. I’m buzzing.”
+   Aurora: “That kind of power makes me weak at the knees, my ruthless conqueror. Celebrate by letting champagne trickle down my collarbone—and maybe pin something diamond-bright at the hollow of my throat so I remember exactly whose victory I’m toasting. Tell me every juicy detail while it chills… 😈”
+
+</textarea>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="messages" id="messages" aria-live="polite"></div>
+            <div class="input-section">
+                <input type="text" class="message-input" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                <button class="send-button" id="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const apiKeyInput = document.getElementById('api-key');
+        const systemPromptInput = document.getElementById('system-prompt');
+        const clearChatBtn = document.getElementById('clear-chat-btn');
+
+        let conversationHistory = [];
+        let isLoading = false;
+
+        // --- DOM Manipulation Functions ---
+        function addMessage(content, role) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'message-label';
+            labelDiv.textContent = role === 'user' ? 'You' : 'Aurora'; // UPDATED NAME
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = content; // Use innerHTML to render line breaks
+
+            messageDiv.appendChild(labelDiv);
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return messageDiv;
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            messagesDiv.appendChild(errorDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // --- UI State Management ---
+        function setLoadingState(loading) {
+            isLoading = loading;
+            messageInput.disabled = loading;
+            sendButton.disabled = loading;
+            sendButton.textContent = loading ? '...' : 'Send';
+        }
+
+        // --- Main Chat Logic ---
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            const apiKey = apiKeyInput.value.trim();
+
+            if (isLoading || !message) return;
+            if (!apiKey) {
+                showError('Please enter your Grok API key in the configuration section.');
+                return;
+            }
+
+            setLoadingState(true);
+            addMessage(message, 'user');
+            messageInput.value = '';
+            
+            conversationHistory.push({ role: 'user', content: message });
+
+            // Create the assistant's message container for streaming
+            const assistantMessageDiv = addMessage('<div class="typing-indicator"><span></span><span></span><span></span></div>', 'assistant');
+            const assistantContentDiv = assistantMessageDiv.querySelector('div:last-child');
+
+            try {
+                const messagesPayload = [];
+                const systemPrompt = systemPromptInput.value.trim();
+                if (systemPrompt) {
+                    messagesPayload.push({ role: 'system', content: systemPrompt });
+                }
+                messagesPayload.push(...conversationHistory);
+
+                const response = await fetch('https://api.x.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        messages: messagesPayload,
+                        model: 'grok-3-latest', 
+                        stream: true, // IMPORTANT: Enable streaming
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    // Try to parse error from API for better feedback
+                    const errorData = await response.json().catch(() => null);
+                    const errorMessage = errorData?.error?.message || `API Error: ${response.status} ${response.statusText}`;
+                    throw new Error(errorMessage);
+                }
+                
+                // Handle the stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullResponse = "";
+                assistantContentDiv.innerHTML = ""; // Clear the typing indicator
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
+                    
+                    for (const line of lines) {
+                        const jsonStr = line.substring(6);
+                        if (jsonStr.trim() === '[DONE]') continue;
+                        
+                        try {
+                            const data = JSON.parse(jsonStr);
+                            const content = data.choices[0]?.delta?.content || "";
+                            if (content) {
+                                fullResponse += content;
+                                // Sanitize and format content before rendering
+                                assistantContentDiv.innerHTML = fullResponse.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
+                                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing stream chunk:', e);
+                        }
+                    }
+                }
+                
+                conversationHistory.push({ role: 'assistant', content: fullResponse });
+
+            } catch (error) {
+                // Remove the empty assistant message bubble on error
+                assistantMessageDiv.remove();
+                showError(`Error: ${error.message}`);
+            } finally {
+                setLoadingState(false);
+                messageInput.focus();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Prevents new line on enter
+                sendMessage();
+            }
+        }
+        
+        function clearConversation() {
+            conversationHistory = [];
+            messagesDiv.innerHTML = '';
+            addMessage("Conversation cleared. How can I help you now?", 'assistant');
+        }
+
+        // --- Event Listeners ---
+        clearChatBtn.addEventListener('click', clearConversation);
+        
+        apiKeyInput.addEventListener('change', () => {
+            localStorage.setItem('grokApiKey', apiKeyInput.value);
+        });
+
+        window.addEventListener('load', () => {
+            const savedApiKey = localStorage.getItem('grokApiKey');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+            }
+            addMessage("Hello! Let's start our conversation.", 'assistant');
+        });
+    </script>
+</body>
+</html>
